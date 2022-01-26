@@ -51,10 +51,10 @@ function render(objects, ctx, dx, dy) {
     for (var i = 0, n_obj = objects.length; i < n_obj; ++i) {
         // For each face
         for (var j = 0, n_faces = objects[i].faces.length; j < n_faces; ++j) {
-            r = Math.round(Math.random() * 255);
-            g = Math.round(Math.random() * 255);
-            b = Math.round(Math.random() * 255);
-            ctx.fillStyle = 'rgba(' + r + ', ' + g + ', ' + b + ', 1)';
+            // r = Math.round(Math.random() * 255);
+            // g = Math.round(Math.random() * 255);
+            // b = Math.round(Math.random() * 255);
+            // ctx.fillStyle = 'rgba(' + r + ', ' + g + ', ' + b + ', 0.5)';
             // Current face
             var face = objects[i].faces[j];
 
