@@ -54,7 +54,7 @@ function render(objects, ctx, dx, dy) {
             r = Math.round(Math.random() * 255);
             g = Math.round(Math.random() * 255);
             b = Math.round(Math.random() * 255);
-            ctx.fillStyle = 'rgba(' + r + ', ' + g + ', ' + b + ', 0.5)';
+            ctx.fillStyle = 'rgba(' + r + ', ' + g + ', ' + b + ', 1)';
             // Current face
             var face = objects[i].faces[j];
 
