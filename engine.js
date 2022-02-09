@@ -328,7 +328,7 @@ var SoftEngine;
 
 var canvas;
 var device;
-var mesh;
+var mesh, mesh2; // a cube and a pyramid
 var meshes = [];
 var mera;
 var fpsArea;
@@ -348,7 +348,9 @@ function init() {
   device = new SoftEngine.Device(canvas);
 
   mesh = new SoftEngine.Mesh("Cube", 8, 12);
+
   meshes.push(mesh);
+
   mesh.Vertices[0] = new BABYLON.Vector3(-1, 1, 1);
   mesh.Vertices[1] = new BABYLON.Vector3(1, 1, 1);
   mesh.Vertices[2] = new BABYLON.Vector3(-1, -1, 1);
