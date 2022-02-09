@@ -332,7 +332,7 @@ function init() {
   //cube.Position = new BABYLON.Vector(0, 0, 0);
 
   SoftEngine.camera.Position = new BABYLON.Vector3(0, 0, 10);
-  SoftEngine.camera.Target = new BABYLON.Vector3(0, 0, 0);
+  SoftEngine.camera.Target = new BABYLON.Vector3(0, 1, 0);
 
   // Calling the HTML5 rendering loop
   requestAnimationFrame(drawingLoop);
