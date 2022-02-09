@@ -345,14 +345,15 @@ function drawingLoop() {
   lastTime = Date.now();
 
   // rotating slightly the cube during each frame rendered
-  cube.Rotation.x += 0.01;
-  cube.Rotation.y += 0.01;
+  // cube.Rotation.x += 0.01;
+  // cube.Rotation.y += 0.01;
 
-  cube2.Rotation.x -= 0.01;
-  cube2.Rotation.y -= 0.01;
+  // cube2.Rotation.x -= 0.01;
+  // cube2.Rotation.y -= 0.01;
 
-  SoftEngine.camera.Position.x += 0.05;
-  SoftEngine.camera.Position.y += 0.05;
+  SoftEngine.camera.Position.x = 20 * Math.cos(Date.now() / 1000);
+  SoftEngine.camera.Position.y = 6 + 5 * Math.sin(Date.now() / 1000);
+  SoftEngine.camera.Position.z = 20 * Math.sin(Date.now() / 1000);
 
   // Doing the various matrix operations
   SoftEngine.device.render(SoftEngine.camera, meshes);
