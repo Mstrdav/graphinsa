@@ -8,9 +8,8 @@ class Camera {
 }
 
 class Light {
-
   constructor(x, y, z) {
-    this.Direction = BABYLON.Vector3(x,y,z);
+    this.Direction = BABYLON.Vector3(x, y, z);
   }
 }
 
@@ -352,6 +351,36 @@ function init() {
   SoftEngine.camera.Position = new BABYLON.Vector3(0, 0, 10);
   SoftEngine.camera.Target = new BABYLON.Vector3(0, 1, 0);
 
+  var viewMatrix = BABYLON.Matrix.LookAtLH(
+    SoftEngine.camera.Position,
+    SoftEngine.camera.Target,
+    BABYLON.Vector3.Up()
+  );
+  var projectionMatrix = BABYLON.Matrix.PerspectiveFovLH(
+    0.78,
+    this.workingWidth / this.workingHeight,
+    0.01,
+    1.0
+  );
+  var translationMatrix = BABYLON.Matrix.RotationYawPitchRoll(
+    meshes[0].Rotation.y,
+    meshes[0].Rotation.x,
+    meshes[0].Rotation.z
+  );
+  var translationMatrix = BABYLON.Matrix.Translation(
+    meshes[0].Position.x,
+    meshes[0].Position.y,
+    meshes[0].Position.z
+  );
+
+  console.table([
+    { name: "SoftEngine.camera.Position", value: SoftEngine.camera.Position },
+    { name: "SoftEngine.camera.Target", value: SoftEngine.camera.Target },
+    { name: "viewMatrix", value: viewMatrix },
+    { name: "projectionMatrix", value: projectionMatrix },
+    { name: "translationMatrix", value: translationMatrix },
+  ]);
+
   // Calling the HTML5 rendering loop
   requestAnimationFrame(drawingLoop);
 }
@@ -361,13 +390,6 @@ function drawingLoop() {
   SoftEngine.device.clear();
   fpsArea.innerText = Math.round(1000 / (Date.now() - lastTime)) + " fps";
   lastTime = Date.now();
-
-  // rotating slightly the cube during each frame rendered
-  // cube.Rotation.x += 0.01;
-  // cube.Rotation.y += 0.01;
-
-  // cube2.Rotation.x -= 0.01;
-  // cube2.Rotation.y -= 0.01;
 
   SoftEngine.camera.Position.x = 20 * Math.cos(Date.now() / 1000);
   SoftEngine.camera.Position.y = 6 + 5 * Math.sin(Date.now() / 1000);
@@ -381,10 +403,3 @@ function drawingLoop() {
   // Calling the HTML5 rendering loop recursively
   requestAnimationFrame(drawingLoop);
 }
-//nice l'espace
-//y'en a un nouveau
-//stop
-//purée
-//ARRÊTE
-//BORDEL
-//VJIGEONHOREIJGEOIGRJb
