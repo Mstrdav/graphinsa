@@ -348,38 +348,76 @@ function init() {
 
   //cube.Position = new BABYLON.Vector(0, 0, 0);
 
-  SoftEngine.camera.Position = new BABYLON.Vector3(0, 0, 10);
-  SoftEngine.camera.Target = new BABYLON.Vector3(0, 1, 0);
+  SoftEngine.camera.Position = new BABYLON.Vector3(10, 10, 10);
+  SoftEngine.camera.Target = new BABYLON.Vector3(0, 0, 0);
+  let down = false;
+  let [x, y, z] = [
+    SoftEngine.camera.Position.x,
+    SoftEngine.camera.Position.y,
+    SoftEngine.camera.Position.z,
+  ];
+  var rho = Math.sqrt(x * x + y * y + z * z);
+  var teta = Math.atan(z / y);
+  var phi = Math.acos(y / rho);
 
-  var viewMatrix = BABYLON.Matrix.LookAtLH(
-    SoftEngine.camera.Position,
-    SoftEngine.camera.Target,
-    BABYLON.Vector3.Up()
-  );
-  var projectionMatrix = BABYLON.Matrix.PerspectiveFovLH(
-    0.78,
-    this.workingWidth / this.workingHeight,
-    0.01,
-    1.0
-  );
-  var translationMatrix = BABYLON.Matrix.RotationYawPitchRoll(
-    meshes[0].Rotation.y,
-    meshes[0].Rotation.x,
-    meshes[0].Rotation.z
-  );
-  var translationMatrix = BABYLON.Matrix.Translation(
-    meshes[0].Position.x,
-    meshes[0].Position.y,
-    meshes[0].Position.z
-  );
+  canvas.addEventListener("mousedown", () => (down = true));
+  canvas.addEventListener("mouseup", () => (down = false));
+  canvas.addEventListener("mousemove", function (event) {
+    if (down && event.buttons == 4) {
+      teta -= event.movementX / 200;
+      phi -= event.movementY / 200;
+      SoftEngine.camera.Position.x =
+        SoftEngine.camera.Target.x + rho * Math.sin(phi) * Math.cos(teta);
+      SoftEngine.camera.Position.z =
+        SoftEngine.camera.Target.x + rho * Math.sin(phi) * Math.sin(teta);
+      SoftEngine.camera.Position.y =
+        SoftEngine.camera.Target.x + rho * Math.cos(phi);
+    } else if (down && event.buttons == 1) {
+      SoftEngine.camera.Target.x -= (Math.cos(teta) * event.movementY) / 100;
+      SoftEngine.camera.Target.z -= (Math.sin(teta) * event.movementY) / 100;
+      SoftEngine.camera.Target.x += (Math.sin(teta) * event.movementX) / 100;
+      SoftEngine.camera.Target.z -= (Math.cos(teta) * event.movementX) / 100;
+    }
+  });
 
-  console.table([
-    { name: "SoftEngine.camera.Position", value: SoftEngine.camera.Position },
-    { name: "SoftEngine.camera.Target", value: SoftEngine.camera.Target },
-    { name: "viewMatrix", value: viewMatrix },
-    { name: "projectionMatrix", value: projectionMatrix },
-    { name: "translationMatrix", value: translationMatrix },
-  ]);
+  canvas.onwheel = (event) => {
+    console.log(event);
+    event.preventDefault;
+    rho += event.deltaY / 100;
+    SoftEngine.camera.Position.x = rho * Math.sin(phi) * Math.cos(teta);
+    SoftEngine.camera.Position.z = rho * Math.sin(phi) * Math.sin(teta);
+    SoftEngine.camera.Position.y = rho * Math.cos(phi);
+  };
+
+  // var viewMatrix = BABYLON.Matrix.LookAtLH(
+  //   SoftEngine.camera.Position,
+  //   SoftEngine.camera.Target,
+  //   BABYLON.Vector3.Up()
+  // );
+  // var projectionMatrix = BABYLON.Matrix.PerspectiveFovLH(
+  //   0.78,
+  //   this.workingWidth / this.workingHeight,
+  //   0.01,
+  //   1.0
+  // );
+  // var translationMatrix = BABYLON.Matrix.RotationYawPitchRoll(
+  //   meshes[0].Rotation.y,
+  //   meshes[0].Rotation.x,
+  //   meshes[0].Rotation.z
+  // );
+  // var translationMatrix = BABYLON.Matrix.Translation(
+  //   meshes[0].Position.x,
+  //   meshes[0].Position.y,
+  //   meshes[0].Position.z
+  // );
+
+  // console.table([
+  //   { name: "SoftEngine.camera.Position", value: SoftEngine.camera.Position },
+  //   { name: "SoftEngine.camera.Target", value: SoftEngine.camera.Target },
+  //   { name: "viewMatrix", value: viewMatrix },
+  //   { name: "projectionMatrix", value: projectionMatrix },
+  //   { name: "translationMatrix", value: translationMatrix },
+  // ]);
 
   // Calling the HTML5 rendering loop
   requestAnimationFrame(drawingLoop);
@@ -391,9 +429,9 @@ function drawingLoop() {
   fpsArea.innerText = Math.round(1000 / (Date.now() - lastTime)) + " fps";
   lastTime = Date.now();
 
-  SoftEngine.camera.Position.x = 20 * Math.cos(Date.now() / 1000);
-  SoftEngine.camera.Position.y = 6 + 5 * Math.sin(Date.now() / 1000);
-  SoftEngine.camera.Position.z = 20 * Math.sin(Date.now() / 1000);
+  // SoftEngine.camera.Position.x = 20 * Math.cos(Date.now() / 1000);
+  // SoftEngine.camera.Position.y = 6 + 5 * Math.sin(Date.now() / 1000);
+  // SoftEngine.camera.Position.z = 20 * Math.sin(Date.now() / 1000);
 
   // Doing the various matrix operations
   SoftEngine.device.render(SoftEngine.camera, meshes);
