@@ -37,7 +37,7 @@ var Cube = function (center, side) {
 
 function project(M) {
     // Distance between the camera and the plane
-    var d = 200;
+    var d = 100;
     var r = d / M.y;
 
     return new Vertex2D(r ** 0.5 * M.x, r ** 0.5 * M.z);
