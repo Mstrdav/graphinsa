@@ -1,13 +1,23 @@
+//la camera a une position et une direction. Cela permet de calculer la distance de la scene et tout le reste
 class Camera {
+  //well coded
   constructor() {
     this.Position = BABYLON.Vector3.Zero();
     this.Target = BABYLON.Vector3.Zero();
   }
 }
 
-// un mesh, c'est un ensemble de points et de faces (des triangles)
+class Light {
+
+  constructor(x, y, z) {
+    this.Direction = BABYLON.Vector3(x,y,z);
+  }
+}
+
+// un mesh, c'est un ensemble de points et de faces (des triangles) => pas des ronds quoi
 // en gros c'est un modèle, un objet
 class Mesh {
+  //well coded
   constructor(name, verticesCount, facesCount, position, rotation) {
     this.name = name;
     this.Vertices = new Array(verticesCount);
@@ -19,6 +29,7 @@ class Mesh {
 
 // l'écran sur lequel on visionne (le canvas html)
 class Device {
+  //well coded
   constructor(canvas) {
     this.workingCanvas = canvas;
     this.workingWidth = canvas.width;
@@ -42,11 +53,13 @@ class Device {
     // Clearing depth buffer
     for (var i = 0; i < this.depthbuffer.length; i++) {
       // Max possible value
-      this.depthbuffer[i] = 10000000;
+      this.depthbuffer[i] = 10000000; //well codedd
     }
   }
   // Called to put a pixel on screen at a specific X,Y coordinates
   putPixel(x, y, z, color) {
+    //=> nice function name
+    //well coded
     this.backbufferdata = this.backbuffer.data;
     // As we have a 1-D Array for our back buffer
     // we need to know the equivalent cell index in 1-D based
@@ -95,6 +108,7 @@ class Device {
   // papb -> pcpd
   // pa, pb, pc, pd must then be sorted before
   processScanLine(y, pa, pb, pc, pd, color) {
+    //=> mdr pd
     // Thanks to current Y, we can compute the gradient to compute others values like
     // the starting X (sx) and ending X (ex) to draw between
     // if pa.Y == pb.Y or pc.Y == pd.Y, gradient is forced to 1
@@ -180,12 +194,13 @@ class Device {
     // --
     // - -
     // -  -
-    // -   - P2
+    // -   - P2 => Oulala le triangle
     // -  -
     // - -
     // -
     // P3
     if (dP1P2 > dP1P3) {
+      //well coded
       for (var y = p1.y >> 0; y <= p3.y >> 0; y++) {
         if (y < p2.y) {
           this.processScanLine(y, p1, p3, p1, p2, color);
@@ -201,7 +216,7 @@ class Device {
     //       --
     //      - -
     //     -  -
-    // P2 -   -
+    // P2 -   -  => Ouais un triangle dans l'autre sens quoi
     //     -  -
     //      - -
     //        -
@@ -247,6 +262,7 @@ class Device {
           cMesh.Position.z
         )
       );
+      //background-attachment: cdmc;
 
       var transformMatrix = worldMatrix
         .multiply(viewMatrix)
@@ -257,10 +273,12 @@ class Device {
         var vertexA = cMesh.Vertices[currentFace.A];
         var vertexB = cMesh.Vertices[currentFace.B];
         var vertexC = cMesh.Vertices[currentFace.C];
+        //very very well coded
 
         var pixelA = this.project(vertexA, transformMatrix);
         var pixelB = this.project(vertexB, transformMatrix);
         var pixelC = this.project(vertexC, transformMatrix);
+        //stylé
 
         var color =
           0.25 +
@@ -289,16 +307,16 @@ function init() {
   fpsArea = document.getElementById("fps");
   lastTime = Date.now();
 
-  canvas = document.getElementById("maincanvas");
-  canvas.width = window.innerWidth;
+  canvas = document.getElementById("maincanvas"); //well coded
+  canvas.width = window.innerWidth; //sympa la fonction
   canvas.height = window.innerHeight;
-  console.info("Document loaded");
+  console.info("Document loaded"); //well coded
   SoftEngine.camera = new Camera();
   SoftEngine.device = new Device(canvas);
 
   cube = new Mesh("Cube", 8, 12, [2, 0, 0], [0, 0, 0]);
 
-  meshes.push(cube);
+  meshes.push(cube); //very welle codedde
 
   cube.Vertices[0] = new BABYLON.Vector3(-1, 1, 1);
   cube.Vertices[1] = new BABYLON.Vector3(1, 1, 1);
@@ -363,3 +381,10 @@ function drawingLoop() {
   // Calling the HTML5 rendering loop recursively
   requestAnimationFrame(drawingLoop);
 }
+//nice l'espace
+//y'en a un nouveau
+//stop
+//purée
+//ARRÊTE
+//BORDEL
+//VJIGEONHOREIJGEOIGRJb
