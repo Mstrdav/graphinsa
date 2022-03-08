@@ -248,17 +248,17 @@ class Device {
 
     for (var index = 0; index < meshes.length; index++) {
       // current mesh to work on
-      var cMesh = meshes[index];
+      var currentMesh = meshes[index];
       // Beware to apply rotation before translation
       var worldMatrix = BABYLON.Matrix.RotationYawPitchRoll(
-        cMesh.Rotation.y,
-        cMesh.Rotation.x,
-        cMesh.Rotation.z
+        currentMesh.Rotation.y,
+        currentMesh.Rotation.x,
+        currentMesh.Rotation.z
       ).multiply(
         BABYLON.Matrix.Translation(
-          cMesh.Position.x,
-          cMesh.Position.y,
-          cMesh.Position.z
+          currentMesh.Position.x,
+          currentMesh.Position.y,
+          currentMesh.Position.z
         )
       );
       //background-attachment: cdmc;
@@ -267,18 +267,21 @@ class Device {
         .multiply(viewMatrix)
         .multiply(projectionMatrix);
 
-      for (var indexFaces = 0; indexFaces < cMesh.Faces.length; indexFaces++) {
-        var currentFace = cMesh.Faces[indexFaces];
-        var vertexA = cMesh.Vertices[currentFace.A];
-        var vertexB = cMesh.Vertices[currentFace.B];
-        var vertexC = cMesh.Vertices[currentFace.C];
+      for (
+        var indexFaces = 0;
+        indexFaces < currentMesh.Faces.length;
+        indexFaces++
+      ) {
+        var currentFace = currentMesh.Faces[indexFaces];
+        var vertexA = currentMesh.Vertices[currentFace.A];
+        var vertexB = currentMesh.Vertices[currentFace.B];
+        var vertexC = currentMesh.Vertices[currentFace.C];
 
         //very very well coded
 
         var pixelA = this.project(vertexA, transformMatrix);
         var pixelB = this.project(vertexB, transformMatrix);
         var pixelC = this.project(vertexC, transformMatrix);
-        //stylé
 
         // compute normal vector
         var vector1 = new BABYLON.Vector3(
@@ -291,10 +294,21 @@ class Device {
           vertexA.y - vertexC.y,
           vertexA.z - vertexC.z
         );
+
         var normalVector = new BABYLON.Vector3(
           vector1.x * vector2.y - vector1.y * vector2.x,
           vector1.y * vector2.z - vector1.z * vector2.y,
           vector1.z * vector2.x - vector1.x * vector2.z
+        );
+
+        // we use order x,z,y because of dot product changing order. Do you follow ?
+        normalVector = this.project(
+          normalVector,
+          BABYLON.Matrix.RotationYawPitchRoll(
+            currentMesh.Rotation.x,
+            currentMesh.Rotation.z,
+            currentMesh.Rotation.y
+          )
         );
 
         var color =
@@ -302,11 +316,22 @@ class Device {
           normalVector.y * SoftEngine.light.Direction.y +
           normalVector.z * SoftEngine.light.Direction.z;
 
-        color = color / 100;
+        color =
+          color /
+          Math.sqrt(
+            normalVector.x ** 2 + normalVector.y ** 2 + normalVector.z ** 2
+          );
 
-        // var color =
-        //   0.25 +
-        //   ((indexFaces % cMesh.Faces.length) / cMesh.Faces.length) * 0.75;
+        color =
+          color /
+          Math.sqrt(
+            SoftEngine.light.Direction.x ** 2 +
+              SoftEngine.light.Direction.y ** 2 +
+              SoftEngine.light.Direction.z ** 2
+          );
+
+        color = 1 / (1 + Math.exp(-color));
+
         this.drawTriangle(
           pixelA,
           pixelB,
@@ -337,9 +362,10 @@ function init() {
   console.info("Document loaded"); //well coded
   SoftEngine.camera = new Camera();
   SoftEngine.device = new Device(canvas);
-  SoftEngine.light = new Light(12, 12, 10);
+  SoftEngine.light = new Light(20, 15, 10);
+  console.log(SoftEngine.light.Direction);
 
-  cube = new Mesh("Cube", 8, 12, [2, 0, 0], [0, 0, 0]);
+  cube = new Mesh("Cube", 8, 12, [0, 0, 0], [0, 0, 0]);
 
   meshes.push(cube); //very welle codedde
 
@@ -352,27 +378,19 @@ function init() {
   cube.Vertices[6] = new BABYLON.Vector3(1, -1, -1);
   cube.Vertices[7] = new BABYLON.Vector3(-1, -1, -1);
 
-  cube.Faces[0] = { A: 0, B: 1, C: 2 };
+  cube.Faces[0] = { A: 0, B: 2, C: 1 };
   cube.Faces[1] = { A: 1, B: 2, C: 3 };
   cube.Faces[2] = { A: 1, B: 3, C: 6 };
-  cube.Faces[3] = { A: 1, B: 5, C: 6 };
+  cube.Faces[3] = { A: 1, B: 6, C: 5 };
   cube.Faces[4] = { A: 0, B: 1, C: 4 };
-  cube.Faces[5] = { A: 1, B: 4, C: 5 };
+  cube.Faces[5] = { A: 1, B: 5, C: 4 };
 
-  cube.Faces[6] = { A: 2, B: 3, C: 7 };
-  cube.Faces[7] = { A: 3, B: 6, C: 7 };
-  cube.Faces[8] = { A: 0, B: 2, C: 7 };
+  cube.Faces[6] = { A: 2, B: 7, C: 3 };
+  cube.Faces[7] = { A: 3, B: 7, C: 6 };
+  cube.Faces[8] = { A: 0, B: 7, C: 2 };
   cube.Faces[9] = { A: 0, B: 4, C: 7 };
   cube.Faces[10] = { A: 4, B: 5, C: 6 };
   cube.Faces[11] = { A: 4, B: 6, C: 7 };
-
-  // cube2 = new Mesh("Cube2", 8, 12, [-2, 0, -5], [0, 0, 0]);
-  // cube2.Faces = cube.Faces;
-  // cube2.Vertices = cube.Vertices;
-
-  // meshes.push(cube2);
-
-  //cube.Position = new BABYLON.Vector(0, 0, 0);
 
   SoftEngine.camera.Position = new BABYLON.Vector3(10, 10, 10);
   SoftEngine.camera.Target = new BABYLON.Vector3(0, 0, 0);
@@ -406,6 +424,9 @@ function init() {
     }
   });
 
+  // pause movements with any key !
+  document.addEventListener("keydown", () => (pause = !pause));
+
   canvas.onwheel = (event) => {
     event.preventDefault;
     rho += event.deltaY / 100;
@@ -413,36 +434,6 @@ function init() {
     SoftEngine.camera.Position.z = rho * Math.sin(phi) * Math.sin(teta);
     SoftEngine.camera.Position.y = rho * Math.cos(phi);
   };
-
-  // var viewMatrix = BABYLON.Matrix.LookAtLH(
-  //   SoftEngine.camera.Position,
-  //   SoftEngine.camera.Target,
-  //   BABYLON.Vector3.Up()
-  // );
-  // var projectionMatrix = BABYLON.Matrix.PerspectiveFovLH(
-  //   0.78,
-  //   this.workingWidth / this.workingHeight,
-  //   0.01,
-  //   1.0
-  // );
-  // var translationMatrix = BABYLON.Matrix.RotationYawPitchRoll(
-  //   meshes[0].Rotation.y,
-  //   meshes[0].Rotation.x,
-  //   meshes[0].Rotation.z
-  // );
-  // var translationMatrix = BABYLON.Matrix.Translation(
-  //   meshes[0].Position.x,
-  //   meshes[0].Position.y,
-  //   meshes[0].Position.z
-  // );
-
-  // console.table([
-  //   { name: "SoftEngine.camera.Position", value: SoftEngine.camera.Position },
-  //   { name: "SoftEngine.camera.Target", value: SoftEngine.camera.Target },
-  //   { name: "viewMatrix", value: viewMatrix },
-  //   { name: "projectionMatrix", value: projectionMatrix },
-  //   { name: "translationMatrix", value: translationMatrix },
-  // ]);
 
   // Calling the HTML5 rendering loop
   requestAnimationFrame(drawingLoop);
@@ -454,9 +445,8 @@ function drawingLoop() {
   fpsArea.innerText = Math.round(1000 / (Date.now() - lastTime)) + " fps";
   lastTime = Date.now();
 
-  // SoftEngine.camera.Position.x = 20 * Math.cos(Date.now() / 1000);
-  // SoftEngine.camera.Position.y = 6 + 5 * Math.sin(Date.now() / 1000);
-  // SoftEngine.camera.Position.z = 20 * Math.sin(Date.now() / 1000);
+  if (!pause) cube.Rotation.z = Math.cos(Date.now() / 2000) * Math.PI;
+  if (!pause) cube.Rotation.x = Math.cos(Date.now() / 5000) * Math.PI;
 
   // Doing the various matrix operations
   SoftEngine.device.render(SoftEngine.camera, meshes);
@@ -466,3 +456,5 @@ function drawingLoop() {
   // Calling the HTML5 rendering loop recursively
   requestAnimationFrame(drawingLoop);
 }
+
+var pause = true;
