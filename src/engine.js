@@ -9,7 +9,7 @@ class Camera {
 
 class Light {
   constructor(x, y, z) {
-    this.Direction = BABYLON.Vector3(x, y, z);
+    this.Direction = new BABYLON.Vector3(x, y, z);
   }
 }
 
@@ -272,6 +272,7 @@ class Device {
         var vertexA = cMesh.Vertices[currentFace.A];
         var vertexB = cMesh.Vertices[currentFace.B];
         var vertexC = cMesh.Vertices[currentFace.C];
+
         //very very well coded
 
         var pixelA = this.project(vertexA, transformMatrix);
@@ -279,9 +280,33 @@ class Device {
         var pixelC = this.project(vertexC, transformMatrix);
         //stylé
 
+        // compute normal vector
+        var vector1 = new BABYLON.Vector3(
+          vertexA.x - vertexB.x,
+          vertexA.y - vertexB.y,
+          vertexA.z - vertexB.z
+        );
+        var vector2 = new BABYLON.Vector3(
+          vertexA.x - vertexC.x,
+          vertexA.y - vertexC.y,
+          vertexA.z - vertexC.z
+        );
+        var normalVector = new BABYLON.Vector3(
+          vector1.x * vector2.y - vector1.y * vector2.x,
+          vector1.y * vector2.z - vector1.z * vector2.y,
+          vector1.z * vector2.x - vector1.x * vector2.z
+        );
+
         var color =
-          0.25 +
-          ((indexFaces % cMesh.Faces.length) / cMesh.Faces.length) * 0.75;
+          normalVector.x * SoftEngine.light.Direction.x +
+          normalVector.y * SoftEngine.light.Direction.y +
+          normalVector.z * SoftEngine.light.Direction.z;
+
+        color = color / 100;
+
+        // var color =
+        //   0.25 +
+        //   ((indexFaces % cMesh.Faces.length) / cMesh.Faces.length) * 0.75;
         this.drawTriangle(
           pixelA,
           pixelB,
@@ -312,6 +337,7 @@ function init() {
   console.info("Document loaded"); //well coded
   SoftEngine.camera = new Camera();
   SoftEngine.device = new Device(canvas);
+  SoftEngine.light = new Light(12, 12, 10);
 
   cube = new Mesh("Cube", 8, 12, [2, 0, 0], [0, 0, 0]);
 
@@ -340,11 +366,11 @@ function init() {
   cube.Faces[10] = { A: 4, B: 5, C: 6 };
   cube.Faces[11] = { A: 4, B: 6, C: 7 };
 
-  cube2 = new Mesh("Cube2", 8, 12, [-2, 0, -5], [0, 0, 0]);
-  cube2.Faces = cube.Faces;
-  cube2.Vertices = cube.Vertices;
+  // cube2 = new Mesh("Cube2", 8, 12, [-2, 0, -5], [0, 0, 0]);
+  // cube2.Faces = cube.Faces;
+  // cube2.Vertices = cube.Vertices;
 
-  meshes.push(cube2);
+  // meshes.push(cube2);
 
   //cube.Position = new BABYLON.Vector(0, 0, 0);
 
@@ -381,7 +407,6 @@ function init() {
   });
 
   canvas.onwheel = (event) => {
-    console.log(event);
     event.preventDefault;
     rho += event.deltaY / 100;
     SoftEngine.camera.Position.x = rho * Math.sin(phi) * Math.cos(teta);
