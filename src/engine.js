@@ -448,7 +448,7 @@ function init() {
   canvas.addEventListener("mousedown", () => (down = true));
   canvas.addEventListener("mouseup", () => (down = false));
   canvas.addEventListener("mousemove", function (event) {
-    if (down && event.buttons == 4) {
+    if (down && event.buttons == 1) {
       teta -= event.movementX / 200;
       phi -= event.movementY / 200;
       if (phi < 0) phi = 0.0001;
@@ -459,7 +459,7 @@ function init() {
         SoftEngine.camera.Target.z + rho * Math.sin(phi) * Math.sin(teta);
       SoftEngine.camera.Position.y =
         SoftEngine.camera.Target.y + rho * Math.cos(phi);
-    } else if (down && event.buttons == 1) {
+    } else if (down && event.buttons == 4) {
       SoftEngine.camera.Target.x -= (Math.cos(teta) * event.movementY) / 100;
       SoftEngine.camera.Target.z -= (Math.sin(teta) * event.movementY) / 100;
       SoftEngine.camera.Target.x += (Math.sin(teta) * event.movementX) / 100;
