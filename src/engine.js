@@ -330,13 +330,19 @@ class Device {
               SoftEngine.light.Direction.z ** 2
           );
 
-        color = 1 / (1 + Math.exp(-color));
+        color = color / 2 + 1 / 2;
+        // if (indexFaces == 0) {
+        //   color3 = 1;
+        // }
+        // good :
+
+        //color = indexFaces / currentMesh.Faces.length;
 
         this.drawTriangle(
           pixelA,
           pixelB,
           pixelC,
-          new BABYLON.Color4(color, color, color, 1)
+          new BABYLON.Color4(1, 1, 1, color)
         );
       }
     }
@@ -362,12 +368,13 @@ function init() {
   console.info("Document loaded"); //well coded
   SoftEngine.camera = new Camera();
   SoftEngine.device = new Device(canvas);
-  SoftEngine.light = new Light(20, 15, 10);
-  console.log(SoftEngine.light.Direction);
+  SoftEngine.light = new Light(-10, -10, 10);
 
   cube = new Mesh("Cube", 8, 12, [0, 0, 0], [0, 0, 0]);
+  icosaedre = new Mesh("Ico", 12, 20, [0, 0, 0], [0, 0, 0]);
 
-  meshes.push(cube); //very welle codedde
+  //meshes.push(cube); //very welle codedde
+  meshes.push(icosaedre);
 
   cube.Vertices[0] = new BABYLON.Vector3(-1, 1, 1);
   cube.Vertices[1] = new BABYLON.Vector3(1, 1, 1);
@@ -377,6 +384,40 @@ function init() {
   cube.Vertices[5] = new BABYLON.Vector3(1, 1, -1);
   cube.Vertices[6] = new BABYLON.Vector3(1, -1, -1);
   cube.Vertices[7] = new BABYLON.Vector3(-1, -1, -1);
+
+  icosaedre.Vertices[0] = new BABYLON.Vector3(1, (1 + Math.sqrt(5)) / 2, 0);
+  icosaedre.Vertices[1] = new BABYLON.Vector3(-1, (1 + Math.sqrt(5)) / 2, 0);
+  icosaedre.Vertices[2] = new BABYLON.Vector3(1, -(1 + Math.sqrt(5)) / 2, 0);
+  icosaedre.Vertices[3] = new BABYLON.Vector3(-1, -(1 + Math.sqrt(5)) / 2, 0);
+  icosaedre.Vertices[4] = new BABYLON.Vector3((1 + Math.sqrt(5)) / 2, 0, 1);
+  icosaedre.Vertices[5] = new BABYLON.Vector3((1 + Math.sqrt(5)) / 2, 0, -1);
+  icosaedre.Vertices[6] = new BABYLON.Vector3(-(1 + Math.sqrt(5)) / 2, 0, 1);
+  icosaedre.Vertices[7] = new BABYLON.Vector3(-(1 + Math.sqrt(5)) / 2, 0, -1);
+  icosaedre.Vertices[8] = new BABYLON.Vector3(0, 1, (1 + Math.sqrt(5)) / 2);
+  icosaedre.Vertices[9] = new BABYLON.Vector3(0, -1, (1 + Math.sqrt(5)) / 2);
+  icosaedre.Vertices[10] = new BABYLON.Vector3(0, 1, -(1 + Math.sqrt(5)) / 2);
+  icosaedre.Vertices[11] = new BABYLON.Vector3(0, -1, -(1 + Math.sqrt(5)) / 2);
+
+  icosaedre.Faces[0] = { A: 1, B: 7, C: 6 }; // 1,7,6
+  icosaedre.Faces[1] = { A: 0, B: 1, C: 8 }; // 0,1,8
+  icosaedre.Faces[2] = { A: 0, B: 10, C: 1 }; // 0,10,1
+  icosaedre.Faces[3] = { A: 1, B: 6, C: 8 }; // 1,6,8
+  icosaedre.Faces[4] = { A: 1, B: 10, C: 7 }; // 1,10,7
+  icosaedre.Faces[5] = { A: 4, B: 0, C: 8 }; // 4,0,8
+  icosaedre.Faces[6] = { A: 0, B: 5, C: 10 }; // 0,5,10
+  icosaedre.Faces[7] = { A: 0, B: 4, C: 5 }; // 0,4,5
+  icosaedre.Faces[8] = { A: 4, B: 8, C: 9 }; // 4,8,9
+  icosaedre.Faces[9] = { A: 6, B: 9, C: 8 }; // 6,9,8
+  icosaedre.Faces[10] = { A: 3, B: 9, C: 6 }; // 3,9,6 - pas choquant
+  icosaedre.Faces[11] = { A: 3, B: 6, C: 7 }; // 3,6,7
+  icosaedre.Faces[12] = { A: 3, B: 7, C: 11 }; // 3,7,11
+  icosaedre.Faces[13] = { A: 7, B: 10, C: 11 }; // 7,10,11
+  icosaedre.Faces[14] = { A: 5, B: 11, C: 10 }; // 5,11,10 - les deux bizarres
+  icosaedre.Faces[15] = { A: 3, B: 11, C: 2 }; // 3,11,2
+  icosaedre.Faces[16] = { A: 5, B: 2, C: 11 }; // 5,2,11 - les deux bizarres
+  icosaedre.Faces[17] = { A: 2, B: 9, C: 3 }; // 2,9,1
+  icosaedre.Faces[18] = { A: 4, B: 2, C: 5 }; // 4,2,5
+  icosaedre.Faces[19] = { A: 2, B: 4, C: 9 }; // 2,4,9
 
   cube.Faces[0] = { A: 0, B: 2, C: 1 };
   cube.Faces[1] = { A: 1, B: 2, C: 3 };
@@ -410,12 +451,14 @@ function init() {
     if (down && event.buttons == 4) {
       teta -= event.movementX / 200;
       phi -= event.movementY / 200;
+      if (phi < 0) phi = 0.0001;
+      if (phi > Math.PI) phi = Math.PI;
       SoftEngine.camera.Position.x =
         SoftEngine.camera.Target.x + rho * Math.sin(phi) * Math.cos(teta);
       SoftEngine.camera.Position.z =
-        SoftEngine.camera.Target.x + rho * Math.sin(phi) * Math.sin(teta);
+        SoftEngine.camera.Target.z + rho * Math.sin(phi) * Math.sin(teta);
       SoftEngine.camera.Position.y =
-        SoftEngine.camera.Target.x + rho * Math.cos(phi);
+        SoftEngine.camera.Target.y + rho * Math.cos(phi);
     } else if (down && event.buttons == 1) {
       SoftEngine.camera.Target.x -= (Math.cos(teta) * event.movementY) / 100;
       SoftEngine.camera.Target.z -= (Math.sin(teta) * event.movementY) / 100;
@@ -445,8 +488,8 @@ function drawingLoop() {
   fpsArea.innerText = Math.round(1000 / (Date.now() - lastTime)) + " fps";
   lastTime = Date.now();
 
-  if (!pause) cube.Rotation.z = Math.cos(Date.now() / 2000) * Math.PI;
-  if (!pause) cube.Rotation.x = Math.cos(Date.now() / 5000) * Math.PI;
+  if (!pause) icosaedre.Rotation.z = Math.cos(Date.now() / 2000) * Math.PI;
+  if (!pause) icosaedre.Rotation.x = Math.cos(Date.now() / 5000) * Math.PI;
 
   // Doing the various matrix operations
   SoftEngine.device.render(SoftEngine.camera, meshes);
