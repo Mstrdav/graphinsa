@@ -34,7 +34,7 @@ class Device {
     this.workingWidth = canvas.width;
     this.workingHeight = canvas.height;
     this.workingContext = this.workingCanvas.getContext("2d");
-    this.depthbuffer = new Array(this.workingWidth * this.workingHeight);
+    this.depthBuffer = new Array(this.workingWidth * this.workingHeight);
   }
   // This function is called to clear the back buffer with a specific color
   clear() {
@@ -42,7 +42,7 @@ class Device {
     this.workingContext.clearRect(0, 0, this.workingWidth, this.workingHeight);
     // once cleared with black pixels, we're getting back the associated image data to
     // clear out back buffer
-    this.backbuffer = this.workingContext.getImageData(
+    this.backBuffer = this.workingContext.getImageData(
       0,
       0,
       this.workingWidth,
@@ -50,33 +50,33 @@ class Device {
     );
 
     // Clearing depth buffer
-    for (var i = 0; i < this.depthbuffer.length; i++) {
+    for (var i = 0; i < this.depthBuffer.length; i++) {
       // Max possible value
-      this.depthbuffer[i] = 10000000; //well codedd
+      this.depthBuffer[i] = 10000000; //well coded
     }
   }
   // Called to put a pixel on screen at a specific X,Y coordinates
   putPixel(x, y, z, color) {
     //=> nice function name
     //well coded
-    this.backbufferdata = this.backbuffer.data;
+    this.backBufferdata = this.backBuffer.data;
     // As we have a 1-D Array for our back buffer
     // we need to know the equivalent cell index in 1-D based
     // on the 2D coordinates of the screen
     var index = (x >> 0) + (y >> 0) * this.workingWidth;
     var index4 = index * 4;
 
-    if (this.depthbuffer[index] < z) {
+    if (this.depthBuffer[index] < z) {
       return; // Discard
     }
 
-    this.depthbuffer[index] = z;
+    this.depthBuffer[index] = z;
 
     // RGBA color space is used by the HTML5 canvas
-    this.backbufferdata[index4] = color.r * 255;
-    this.backbufferdata[index4 + 1] = color.g * 255;
-    this.backbufferdata[index4 + 2] = color.b * 255;
-    this.backbufferdata[index4 + 3] = color.a * 255;
+    this.backBufferdata[index4] = color.r * 255;
+    this.backBufferdata[index4 + 1] = color.g * 255;
+    this.backBufferdata[index4 + 2] = color.b * 255;
+    this.backBufferdata[index4 + 3] = color.a * 255;
   }
   // Project takes some 3D coordinates and transform them
   // in 2D coordinates using the transformation matrix
@@ -131,7 +131,7 @@ class Device {
   // Once everything is ready, we can flush the back buffer
   // into the front buffer.
   present() {
-    this.workingContext.putImageData(this.backbuffer, 0, 0);
+    this.workingContext.putImageData(this.backBuffer, 0, 0);
   }
   // Clamping values to keep them between 0 and 1
   clamp(value, min, max) {
