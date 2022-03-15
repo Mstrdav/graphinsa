@@ -38,7 +38,7 @@ class Device {
     this.workingWidth = canvas.width;
     this.workingHeight = canvas.height;
     this.workingContext = this.workingCanvas.getContext("2d");
-    this.depthbuffer = new Array(this.workingWidth * this.workingHeight);
+    this.depthBuffer = new Array(this.workingWidth * this.workingHeight);
   }
 
   /**
@@ -49,7 +49,7 @@ class Device {
     this.workingContext.clearRect(0, 0, this.workingWidth, this.workingHeight);
     // once cleared with black pixels, we're getting back the associated image data to
     // clear out back buffer
-    this.backbuffer = this.workingContext.getImageData(
+    this.backBuffer = this.workingContext.getImageData(
       0,
       0,
       this.workingWidth,
@@ -57,9 +57,9 @@ class Device {
     );
 
     // Clearing depth buffer
-    for (var i = 0; i < this.depthbuffer.length; i++) {
+    for (var i = 0; i < this.depthBuffer.length; i++) {
       // Max possible value
-      this.depthbuffer[i] = 10000000; //well codedd
+      this.depthBuffer[i] = 10000000; //well coded
     }
   }
 
@@ -72,7 +72,7 @@ class Device {
    * @returns Nothing
    */
   putPixel(x, y, z, color) {
-    this.backbufferdata = this.backbuffer.data;
+    this.backBufferdata = this.backBuffer.data;
 
     /* The following code is calculating the index of the pixel in the image data array. */
     var index = (x >> 0) + (y >> 0) * this.workingWidth;
@@ -80,17 +80,17 @@ class Device {
 
     /* Checking if the depth buffer value at the current pixel is less than the current z value. If it
     is, then it is discarding the pixel. */
-    if (this.depthbuffer[index] < z) {
+    if (this.depthBuffer[index] < z) {
       return; // Discard
     }
 
-    this.depthbuffer[index] = z;
+    this.depthBuffer[index] = z;
 
     // RGBA color space is used by the HTML5 canvas
-    this.backbufferdata[index4] = color.r * 255;
-    this.backbufferdata[index4 + 1] = color.g * 255;
-    this.backbufferdata[index4 + 2] = color.b * 255;
-    this.backbufferdata[index4 + 3] = color.a * 255;
+    this.backBufferdata[index4] = color.r * 255;
+    this.backBufferdata[index4 + 1] = color.g * 255;
+    this.backBufferdata[index4 + 2] = color.b * 255;
+    this.backBufferdata[index4 + 3] = color.a * 255;
   }
 
   /**
@@ -170,7 +170,7 @@ class Device {
    * It presents the backbuffer to the screen.
    */
   present() {
-    this.workingContext.putImageData(this.backbuffer, 0, 0);
+    this.workingContext.putImageData(this.backBuffer, 0, 0);
   }
 
   /**
